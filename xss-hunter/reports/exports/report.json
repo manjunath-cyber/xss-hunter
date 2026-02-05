@@ -1,0 +1,483 @@
+{
+    "metadata": {
+        "report_id": "xss-scan-20260127-083600",
+        "project_name": "XSS Hunter",
+        "report_title": "XSS Vulnerability Scan Report",
+        "scan_date": "2026-01-27T08:36:00Z",
+        "scan_end_date": "2026-01-27T08:51:45Z",
+        "scan_duration_seconds": 945,
+        "scanner_version": "1.0.0",
+        "scanner_name": "XSS Hunter",
+        "generator": "xss_hunter/reports/exports",
+        "report_format_version": "1.0"
+    },
+    "summary": {
+        "total_endpoints_scanned": 24,
+        "total_parameters_tested": 156,
+        "total_payloads_tested": 3744,
+        "total_vulnerabilities_found": 35,
+        "vulnerabilities_by_severity": {
+            "critical": 3,
+            "high": 7,
+            "medium": 12,
+            "low": 8,
+            "informational": 5
+        },
+        "overall_risk_level": "HIGH",
+        "remediation_priority": "URGENT"
+    },
+    "endpoints": [
+        {
+            "endpoint_id": "ep-001",
+            "url": "https://api.example.com/api/search",
+            "method": "GET",
+            "base_path": "/api/search",
+            "description": "Search functionality endpoint",
+            "status_code": 200,
+            "response_time_ms": 145,
+            "vulnerabilities": {
+                "critical": 2,
+                "high": 3,
+                "medium": 5,
+                "low": 2,
+                "informational": 1
+            },
+            "total_issues": 13,
+            "parameters_tested": [
+                {
+                    "name": "query",
+                    "type": "string",
+                    "location": "query",
+                    "vulnerable": true,
+                    "findings_count": 8
+                },
+                {
+                    "name": "filter",
+                    "type": "string",
+                    "location": "query",
+                    "vulnerable": true,
+                    "findings_count": 5
+                }
+            ],
+            "risk_score": 9.1,
+            "scan_status": "COMPLETED",
+            "scan_timestamp": "2026-01-27T08:36:15Z"
+        },
+        {
+            "endpoint_id": "ep-002",
+            "url": "https://api.example.com/api/users",
+            "method": "GET",
+            "base_path": "/api/users",
+            "description": "List all users endpoint",
+            "status_code": 200,
+            "response_time_ms": 234,
+            "vulnerabilities": {
+                "critical": 1,
+                "high": 2,
+                "medium": 4,
+                "low": 3,
+                "informational": 2
+            },
+            "total_issues": 12,
+            "parameters_tested": [
+                {
+                    "name": "name",
+                    "type": "string",
+                    "location": "query",
+                    "vulnerable": true,
+                    "findings_count": 4
+                },
+                {
+                    "name": "email",
+                    "type": "string",
+                    "location": "query",
+                    "vulnerable": true,
+                    "findings_count": 5
+                },
+                {
+                    "name": "role",
+                    "type": "string",
+                    "location": "query",
+                    "vulnerable": false,
+                    "findings_count": 0
+                }
+            ],
+            "risk_score": 8.4,
+            "scan_status": "COMPLETED",
+            "scan_timestamp": "2026-01-27T08:36:45Z"
+        },
+        {
+            "endpoint_id": "ep-003",
+            "url": "https://api.example.com/api/users/{id}",
+            "method": "GET",
+            "base_path": "/api/users/{id}",
+            "description": "Get user by ID endpoint",
+            "status_code": 200,
+            "response_time_ms": 89,
+            "vulnerabilities": {
+                "critical": 0,
+                "high": 2,
+                "medium": 3,
+                "low": 2,
+                "informational": 1
+            },
+            "total_issues": 8,
+            "parameters_tested": [
+                {
+                    "name": "id",
+                    "type": "integer",
+                    "location": "path",
+                    "vulnerable": false,
+                    "findings_count": 0
+                }
+            ],
+            "risk_score": 7.2,
+            "scan_status": "COMPLETED",
+            "scan_timestamp": "2026-01-27T08:37:30Z"
+        }
+    ],
+    "vulnerabilities": [
+        {
+            "vulnerability_id": "vuln-001",
+            "endpoint_id": "ep-001",
+            "endpoint_url": "https://api.example.com/api/search",
+            "parameter_name": "query",
+            "vulnerability_type": "Reflected XSS",
+            "severity": "CRITICAL",
+            "cvss_score": 9.1,
+            "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H",
+            "cwe_id": "CWE-79",
+            "cwe_name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+            "owasp_top_10": "A03:2021 - Injection",
+            "description": "The application fails to properly sanitize user input in the search query parameter before reflecting it in the API response. An attacker can craft a malicious URL containing JavaScript code that will be executed in the victim's browser.",
+            "attack_vector": "NETWORK",
+            "attack_complexity": "LOW",
+            "privileges_required": "NONE",
+            "user_interaction": "REQUIRED",
+            "scope": "CHANGED",
+            "confidentiality_impact": "HIGH",
+            "integrity_impact": "HIGH",
+            "availability_impact": "HIGH",
+            "payload_tested": "<script>alert('xss')</script>",
+            "proof_of_concept": {
+                "method": "GET",
+                "url": "https://api.example.com/api/search?query=<script>alert('xss')</script>",
+                "request_headers": {
+                    "User-Agent": "Mozilla/5.0",
+                    "Accept": "application/json"
+                },
+                "response_status": 200,
+                "response_body": {
+                    "results": "<script>alert('xss')</script>",
+                    "count": 0
+                },
+                "reflection_type": "DIRECT"
+            },
+            "impact": [
+                "Session hijacking through cookie theft",
+                "Credential harvesting via fake login forms",
+                "Malware distribution",
+                "Defacement of user interface",
+                "Unauthorized actions on behalf of users"
+            ],
+            "remediation": {
+                "priority": "CRITICAL",
+                "recommended_actions": [
+                    {
+                        "action": "Input Validation",
+                        "description": "Implement strict whitelist validation for all user inputs",
+                        "implementation": "Use a library like bleach or DOMPurify to validate input"
+                    },
+                    {
+                        "action": "Output Encoding",
+                        "description": "HTML-encode all user input before reflecting in responses",
+                        "implementation": "Use html.escape() in Python or equivalent in your framework"
+                    },
+                    {
+                        "action": "Content Security Policy",
+                        "description": "Implement CSP headers to restrict script execution",
+                        "implementation": "Add Content-Security-Policy: default-src 'self'"
+                    },
+                    {
+                        "action": "Web Application Firewall",
+                        "description": "Deploy WAF rules to detect and block XSS payloads",
+                        "implementation": "Configure ModSecurity or similar WAF"
+                    },
+                    {
+                        "action": "Security Testing",
+                        "description": "Integrate automated XSS testing in CI/CD pipeline",
+                        "implementation": "Add xss_hunter to your security testing workflow"
+                    }
+                ]
+            },
+            "references": [
+                {
+                    "title": "OWASP XSS Prevention Cheat Sheet",
+                    "url": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+                },
+                {
+                    "title": "CWE-79: Cross-site Scripting",
+                    "url": "https://cwe.mitre.org/data/definitions/79.html"
+                },
+                {
+                    "title": "OWASP Testing Guide - Testing for XSS",
+                    "url": "https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/01-Testing_for_Reflected_Cross_Site_Scripting"
+                }
+            ],
+            "discovered_date": "2026-01-27T08:36:15Z",
+            "last_verified_date": "2026-01-27T08:36:15Z",
+            "status": "OPEN",
+            "assignee": null,
+            "tags": [
+                "xss",
+                "reflected",
+                "critical",
+                "injection"
+            ]
+        },
+        {
+            "vulnerability_id": "vuln-002",
+            "endpoint_id": "ep-001",
+            "endpoint_url": "https://api.example.com/api/search",
+            "parameter_name": "filter",
+            "vulnerability_type": "Reflected XSS",
+            "severity": "CRITICAL",
+            "cvss_score": 9.1,
+            "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H",
+            "cwe_id": "CWE-79",
+            "cwe_name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+            "owasp_top_10": "A03:2021 - Injection",
+            "description": "The filter parameter in the search endpoint is vulnerable to reflected XSS attacks. User input is directly reflected without proper sanitization.",
+            "attack_vector": "NETWORK",
+            "attack_complexity": "LOW",
+            "privileges_required": "NONE",
+            "user_interaction": "REQUIRED",
+            "scope": "CHANGED",
+            "confidentiality_impact": "HIGH",
+            "integrity_impact": "HIGH",
+            "availability_impact": "HIGH",
+            "payload_tested": "<img src=x onerror=\"alert('xss')\">",
+            "proof_of_concept": {
+                "method": "GET",
+                "url": "https://api.example.com/api/search?filter=<img src=x onerror=\"alert('xss')\">",
+                "response_status": 200,
+                "reflection_type": "DIRECT"
+            },
+            "impact": [
+                "Session hijacking through cookie theft",
+                "Credential harvesting via fake login forms",
+                "Malware distribution"
+            ],
+            "remediation": {
+                "priority": "CRITICAL",
+                "recommended_actions": [
+                    {
+                        "action": "Input Validation",
+                        "description": "Implement strict whitelist validation for all user inputs"
+                    },
+                    {
+                        "action": "Output Encoding",
+                        "description": "HTML-encode all user input before reflecting in responses"
+                    }
+                ]
+            },
+            "discovered_date": "2026-01-27T08:36:22Z",
+            "status": "OPEN",
+            "tags": [
+                "xss",
+                "reflected",
+                "critical"
+            ]
+        },
+        {
+            "vulnerability_id": "vuln-003",
+            "endpoint_id": "ep-002",
+            "endpoint_url": "https://api.example.com/api/users",
+            "parameter_name": "name",
+            "vulnerability_type": "Reflected XSS",
+            "severity": "HIGH",
+            "cvss_score": 8.2,
+            "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:N",
+            "cwe_id": "CWE-79",
+            "description": "The name parameter accepts user input that is reflected in search results without proper sanitization.",
+            "payload_tested": "<svg onload=\"alert('xss')\">",
+            "proof_of_concept": {
+                "method": "GET",
+                "url": "https://api.example.com/api/users?name=<svg onload=\"alert('xss')\">",
+                "response_status": 200,
+                "reflection_type": "DIRECT"
+            },
+            "discovered_date": "2026-01-27T08:36:45Z",
+            "status": "OPEN",
+            "tags": [
+                "xss",
+                "reflected",
+                "high"
+            ]
+        },
+        {
+            "vulnerability_id": "vuln-004",
+            "endpoint_id": "ep-002",
+            "endpoint_url": "https://api.example.com/api/users",
+            "parameter_name": "email",
+            "vulnerability_type": "Reflected XSS",
+            "severity": "MEDIUM",
+            "cvss_score": 6.1,
+            "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+            "cwe_id": "CWE-79",
+            "description": "Email parameter reflects user input with partial encoding, but encoding may be bypassable.",
+            "payload_tested": "<body onload=\"alert('xss')\">",
+            "discovered_date": "2026-01-27T08:37:12Z",
+            "status": "OPEN",
+            "tags": [
+                "xss",
+                "reflected",
+                "medium"
+            ]
+        }
+    ],
+    "statistics": {
+        "total_findings": 35,
+        "findings_by_severity": {
+            "critical": 3,
+            "high": 7,
+            "medium": 12,
+            "low": 8,
+            "informational": 5
+        },
+        "findings_by_type": {
+            "reflected_xss": 28,
+            "stored_xss": 5,
+            "dom_xss": 2
+        },
+        "findings_by_endpoint": {
+            "https://api.example.com/api/search": 13,
+            "https://api.example.com/api/users": 12,
+            "https://api.example.com/api/users/{id}": 8,
+            "https://api.example.com/api/products": 2
+        },
+        "remediation_status": {
+            "open": 35,
+            "in_progress": 0,
+            "resolved": 0,
+            "false_positive": 0
+        },
+        "scanner_statistics": {
+            "total_requests_made": 3744,
+            "successful_requests": 3641,
+            "failed_requests": 103,
+            "success_rate_percent": 97.25,
+            "average_response_time_ms": 156.4,
+            "timeout_count": 5
+        }
+    },
+    "performance": {
+        "scan_start_time": "2026-01-27T08:36:00Z",
+        "scan_end_time": "2026-01-27T08:51:45Z",
+        "total_duration_seconds": 945,
+        "endpoints_scanned_per_minute": 1.52,
+        "average_time_per_endpoint_seconds": 39.38,
+        "average_time_per_parameter_seconds": 6.05,
+        "threads_used": 4,
+        "memory_usage_mb": 256.8,
+        "cpu_usage_percent": 42.5
+    },
+    "configuration": {
+        "scan_profile": "comprehensive",
+        "timeout_seconds": 10,
+        "verify_ssl": true,
+        "payload_count": 15,
+        "encoding_checks_enabled": true,
+        "follow_redirects": true,
+        "max_redirects": 5,
+        "proxy_enabled": false,
+        "rate_limiting": {
+            "enabled": true,
+            "requests_per_second": 2
+        }
+    },
+    "recommendations": {
+        "immediate_action": [
+            {
+                "priority": "P0",
+                "title": "Fix Critical XSS Vulnerabilities in /api/search",
+                "description": "Two critical XSS vulnerabilities in query and filter parameters require immediate remediation",
+                "estimated_effort_hours": 4,
+                "estimated_effort_days": 0.5
+            },
+            {
+                "priority": "P0",
+                "title": "Fix Critical XSS in /api/users",
+                "description": "One critical XSS vulnerability in name parameter requires immediate remediation",
+                "estimated_effort_hours": 2,
+                "estimated_effort_days": 0.25
+            }
+        ],
+        "short_term": [
+            {
+                "priority": "P1",
+                "title": "Input Validation Framework",
+                "description": "Implement comprehensive input validation across all endpoints",
+                "estimated_effort_hours": 16,
+                "estimated_effort_days": 2
+            },
+            {
+                "priority": "P1",
+                "title": "Output Encoding",
+                "description": "Apply consistent output encoding to all API responses",
+                "estimated_effort_hours": 12,
+                "estimated_effort_days": 1.5
+            }
+        ],
+        "long_term": [
+            {
+                "priority": "P2",
+                "title": "Security Testing in CI/CD",
+                "description": "Integrate XSS Hunter into your CI/CD pipeline for continuous scanning",
+                "estimated_effort_hours": 8,
+                "estimated_effort_days": 1
+            },
+            {
+                "priority": "P2",
+                "title": "Web Application Firewall",
+                "description": "Deploy WAF to protect against XSS and other web attacks",
+                "estimated_effort_hours": 20,
+                "estimated_effort_days": 2.5
+            }
+        ]
+    },
+    "compliance": {
+        "owasp_top_10_2021": {
+            "A03:2021_Injection": {
+                "status": "VIOLATED",
+                "findings_count": 35,
+                "critical_findings": 3
+            }
+        },
+        "cwe_coverage": [
+            {
+                "cwe_id": "CWE-79",
+                "cwe_name": "Cross-site Scripting (XSS)",
+                "findings_count": 35
+            }
+        ],
+        "pci_dss": {
+            "requirement_6_5_7": {
+                "status": "VIOLATED",
+                "description": "Cross-Site Scripting (XSS) prevention",
+                "findings_count": 35
+            }
+        }
+    },
+    "export_info": {
+        "generated_by": "XSS Hunter v1.0.0",
+        "export_date": "2026-01-27T08:51:45Z",
+        "export_format": "JSON",
+        "report_format_version": "1.0",
+        "additional_formats_available": [
+            "HTML",
+            "PDF",
+            "CSV"
+        ]
+    }
+}
